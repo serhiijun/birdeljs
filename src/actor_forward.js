@@ -1,43 +1,42 @@
 import { createConsumer } from "@rails/actioncable"
 export class ActorForward {
-  constructor() {
+  constructor({log} = {}) {
     this.actors = {};
     this.queueBumps = [];
+    this.log = log;
   }
 
   pushBump(bump){
     this.queueBumps.push(bump);
   }
 
-  removeActor(actor) {
-    const protoName = actor.name.split("--").pop().split("-").map((word) => {
-      return word.toUpperCase()[0] + word.slice(1);
-    }).join("") + "Actor";
-    const index = this.actors[protoName].indexOf(actor);
+  removeActor(actor){
+    const actorDashed = actor.name.split("--").pop();
+    const actorCam = this.actorCamelized(actorDashed) + "Actor";
+    const index = this.actors[actorCam].indexOf(actor);
     if (index > -1) {
-      this.actors[protoName].splice(index, 1);
+      this.actors[actorCam].splice(index, 1);
     }
   }
 
-  addActor(actor) {
-    const protoName = actor.name.split("--").pop().split("-").map((word) => {
-      return word.toUpperCase()[0] + word.slice(1);
-    }).join("") + "Actor";
-    if(!this.actors[protoName]) this.actors[protoName] = [];
-    this.actors[protoName].push(actor);
+  addActor(actor){
+    const actorDashed = actor.name.split("--").pop();
+    const actorCam = this.actorCamelized(actorDashed) + "Actor";
+    if(!this.actors[actorCam]) this.actors[actorCam] = [];
+    this.actors[actorCam].push(actor);
   }
 
-  getActor(componentCssClass, actorName, resourceId){
-    const actorDashed = actorName;
-    const actorCamelized = this.actorCamelized(actorDashed);
-    return this.actors[actorCamelized].find(actor => (actor.name == componentCssClass) && (actor.resourceId == resourceId));
+  getActor(componentCssClass, actorDashed, {resourceId} = {}){
+    resourceId = resourceId || false;
+    const actorCam = this.actorCamelized(actorDashed);
+    return this.actors[actorCam].find(actor => (actor.name == componentCssClass) && (actor.resourceId == resourceId));
   }
 
-  forward(componentCssClass, actorAndMethod, resourceId, e) {
+  forward(componentCssClass, actorAndMethod, {data, resourceId} = {}) {
+    resourceId = resourceId || false;
     const [actorDashed, methodName] = actorAndMethod.split('#');
-    const actorCamelized = this.actorCamelized(actorDashed);
-    const actor = this.actors[actorCamelized].find(actor => actor.name === componentCssClass && actor.resourceId === resourceId);
-    actor?.[methodName]?.call(actor, e);
+    const actor = this.getActor(componentCssClass, actorDashed, {resourceId: resourceId});
+    actor[methodName].call(actor, data);
   }
 
   subscribe({channel, id} = {}) {
@@ -49,20 +48,22 @@ export class ActorForward {
       },
       {
         connected: () => {
-          console.log("connected");
+          if (this.log) console.log("connected");
           this.queueBumps.forEach(bump => {
-            this.forward(bump.componentCssClass, bump.actorAndMethod, bump.resourceId, bump.e);
+            this.forward(bump.componentCssClass, bump.actorAndMethod, {resourceId: bump.resourceId, data: bump.e});
           });
         },
         received: (res) => {
-          console.log(res);
-          const callback = res.callback;
+          if (this.log) console.log(res);
+          const callback          = res.callback;
           const componentCssClass = callback.component;
-          const actorName = callback.actor.split('--').pop().split('-').map(word => {return word.toUpperCase()[0] + word.slice(1)}).join("");
-          const actor = this.actors[actorName].find(actor => actor.name == componentCssClass && actor.resourceId == callback.resourceId);
+          const actorDashed       = callback.actor;
+          const actor             = this.getActor(componentCssClass, actorDashed, {resourceId: callback.resourceId});
           actor[callback.method].call(actor, res.data);
         },
-        disconnected: () => console.log("disconnected")
+        disconnected: () => {
+          if (this.log) console.log("disconnected");
+        }
       }
     );
   }
