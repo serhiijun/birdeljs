@@ -1,0 +1,19 @@
+{
+  "name": "birdeljs",
+  "version": "1.4.0",
+  "description": "",
+  "main": "dist/birdeljs.js",
+  "module": "index.js",
+  "files": [
+    "dist/",
+    "src/"
+  ],
+  "scripts": {
+    "build": "esbuild index.js --bundle --minify --outfile=dist/birdeljs.js --format=esm"
+  },
+  "dependencies": {
+    "@rails/actioncable": "^6.1.5"
+  },
+  "author": "serhiijun",
+  "license": "MIT"
+}
