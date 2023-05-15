@@ -2,7 +2,7 @@ export class ActorBase{
   constructor(element) {
     this.element = element;
     this.name = this.element.dataset.controller;
-    this.resourceId = this.element.dataset.resourceId;
+    this.resourceId = this.element.dataset.resourceId || false;
     window.Birdel.addActor(this);
   }
 

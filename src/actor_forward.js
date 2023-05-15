@@ -29,18 +29,14 @@ export class ActorForward {
 
   getActor(componentCssClass, actorName, resourceId){
     const actorDashed = actorName;
-    const actorCamelized = actorDashed.split('-').map(word => {return word.toUpperCase()[0] + word.slice(1)}).join("");
-    if (resourceId){
-      return this.actors[actorCamelized].find(actor => (actor.name == componentCssClass) && (actor.resourceId == resourceId));
-    } else {
-      return this.actors[actorCamelized].find(actor => actor.name == componentCssClass);
-    }
+    const actorCamelized = this.actorCamelized(actorDashed);
+    return this.actors[actorCamelized].find(actor => (actor.name == componentCssClass) && (actor.resourceId == resourceId));
   }
 
   forward(componentCssClass, actorAndMethod, resourceId, e) {
     const [actorDashed, methodName] = actorAndMethod.split('#');
-    const actorCamelized = actorDashed.split('-').map(word => word.toUpperCase()[0] + word.slice(1)).join("");
-    const actor = resourceId ? this.actors[actorCamelized].find(actor => actor.name === componentCssClass && actor.resourceId === resourceId) : this.actors[actorCamelized].find(actor => actor.name === componentCssClass);
+    const actorCamelized = this.actorCamelized(actorDashed);
+    const actor = this.actors[actorCamelized].find(actor => actor.name === componentCssClass && actor.resourceId === resourceId);
     actor?.[methodName]?.call(actor, e);
   }
 
@@ -63,13 +59,8 @@ export class ActorForward {
           const callback = res.callback;
           const componentCssClass = callback.component;
           const actorName = callback.actor.split('--').pop().split('-').map(word => {return word.toUpperCase()[0] + word.slice(1)}).join("");
-          if (callback.resourceId){
-            const actor = this.actors[actorName].find(actor => actor.name == componentCssClass && actor.resourceId == callback.resourceId);
-            actor[callback.method].call(actor, res.data);
-          } else {
-            const actor = this.actors[actorName].find(actor => actor.name == componentCssClass);
-            actor[callback.method].call(actor, res.data);
-          }
+          const actor = this.actors[actorName].find(actor => actor.name == componentCssClass && actor.resourceId == callback.resourceId);
+          actor[callback.method].call(actor, res.data);
         },
         disconnected: () => console.log("disconnected")
       }
@@ -78,5 +69,9 @@ export class ActorForward {
 
   send(req){
     this.channel.perform("actorThrough", req);
+  }
+
+  actorCamelized(actorDashed){
+    return actorDashed.split('-').map(word => {return word.toUpperCase()[0] + word.slice(1)}).join("");
   }
 }
