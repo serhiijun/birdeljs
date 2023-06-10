@@ -34,6 +34,14 @@ export class ActorElement{
     rad.classList.add("b_rad--active");
   }
 
+  static selectCheckbox({chx} = {}) {
+    if(chx.classList.contains("b_chx--active")) {
+      chx.classList.remove("b_chx--active");
+    } else {
+      chx.classList.add("b_chx--active");
+    }
+  }
+
   static toggleModal({modal} = {}) {
     modal.classList.toggle("b_modal--active");
   }
