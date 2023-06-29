@@ -1,48 +1,59 @@
 export class ActorElement{
-  static toggleDropdown({dwEl} = {}) {
-    dwEl.classList.toggle("b_dw--active");
+  static toggleDropdown({bel}) {
+    bel.classList.toggle("b_dw--active");
   }
 
-  static closeDropdown({dwEl} = {}) {
-    dwEl.classList.remove("b_dw--active");
+  static closeDropdown({bel}) {
+    bel.classList.remove("b_dw--active");
   }
 
-  static toggleSel({sel} = {}) {
-    const disabled = sel.classList.contains("b_sel--disabled");
+  static toggleSelect({bel}) {
+    const disabled = bel.classList.contains("b_sel--disabled");
     if(disabled) return;
-    sel.classList.toggle("b_sel--active");
+    bel.classList.toggle("b_sel--active");
   }
 
-  static closeSel({sel} = {}) {
-    sel.classList.remove("b_sel--active");
+  static closeSel({bel}) {
+    bel.classList.remove("b_sel--active");
   }
 
-  static selectItem({sel, selItem} = {}) {
+  static selectItem({bel, selItem}) {
     // In select element
-    const selTitle = sel.getElementsByClassName("b_sel__title")[0];
+    const selTitle = bel.getElementsByClassName("b_sel__title")[0];
     selTitle.innerHTML = selItem.innerHTML;
-    sel.dataset.bselId = selItem.dataset.itemId;
+    bel.dataset.bselId = selItem.dataset.itemId;
   }
 
-  static selectRadio({rad} = {}) {
-    const radioGroup = rad.dataset.bRadGroup;
+  static selectRadio({bel}) {
+    if(bel.classList.contains("b_rad--active")) return;
+    
+    const radioGroup = bel.dataset.bRadGroup;
     const radios = document.querySelectorAll(`[data-b-rad-group="${radioGroup}"]`);
-    if(rad.classList.contains("b_rad--active")) return;
     radios.forEach((radio) => {
       radio.classList.remove("b_rad--active");
     });
-    rad.classList.add("b_rad--active");
+    bel.classList.add("b_rad--active");
   }
 
-  static selectCheckbox({chx} = {}) {
-    if(chx.classList.contains("b_chx--active")) {
-      chx.classList.remove("b_chx--active");
+  static toggleCheckbox({bel}) {
+    if(bel.classList.contains("b_chx--active")) {
+      bel.classList.remove("b_chx--active");
     } else {
-      chx.classList.add("b_chx--active");
+      bel.classList.add("b_chx--active");
     }
   }
 
-  static toggleModal({modal} = {}) {
-    modal.classList.toggle("b_modal--active");
+  static selectCheckbox({bel}) {
+    if (bel.classList.contains("b_chx--active")) return;
+    bel.classList.add("b_chx--active");
+  }
+
+  static unselectCheckbox({bel}) {
+    if (!bel.classList.contains("b_chx--active")) return;
+    bel.classList.remove("b_chx--active");
+  }
+
+  static toggleModal({bel}) {
+    bel.classList.toggle("b_modal--active");
   }
 }
