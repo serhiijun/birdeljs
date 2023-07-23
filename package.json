@@ -1,6 +1,6 @@
 {
   "name": "birdeljs",
-  "version": "3.3.2",
+  "version": "3.3.3",
   "description": "",
   "main": "dist/birdeljs.js",
   "module": "index.js",
@@ -9,7 +9,7 @@
     "src/"
   ],
   "scripts": {
-    "build": "esbuild index.js --bundle --minify --outfile=dist/birdeljs.js --format=esm --external:@rails/actioncable"
+    "build": "esbuild index.js --outfile=dist/birdeljs.js --bundle --minify --format=esm --target=es6 --external:@rails/actioncable"
   },
   "exports": {
     ".": {
