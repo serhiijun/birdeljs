@@ -1,9 +1,16 @@
 export class ActorBase{
-  constructor(element, {setProps} = {setProps: false}){
+  constructor(element, {setProps, isMain} = {setProps: false, isMain: false}){
+    const setPropsAvailable = ['cookie', 'dataset']
     this.element = element
     this.name = this.element.dataset.controller
     this.resourceId = this.element.dataset.resourceId || false
-    this.props = setProps && this.#retrievePropsFromCookie({name: this.name})
+    if (!setPropsAvailable.includes(setProps)) {
+      this.props = setProps
+    } else {
+      const setPropsMethodName = `#retrievePropsFrom${setProps.capitalize()}`;
+      this[setPropsMethodName].call(this, {name: this.name})
+    }
+    this.isMain = isMain
     window.Birdel.addActor({...this})
   }
 
@@ -23,7 +30,10 @@ export class ActorBase{
 
     const decoded = decodeURIComponent(cookieValue.split('=')[1])
     const parsedData = JSON.parse(decoded)
-    console.log("parsedData", parsedData)
     return parsedData
+  }
+
+  #retrievePropsFromDataset({name}){
+    return JSON.parse(this.element.dataset.props)
   }
 }

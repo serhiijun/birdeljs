@@ -24,6 +24,7 @@ export class ActorForward {
     const actorCam = this.actorCamelized(actorDashed) + "Actor";
     if(!this.actors[actorCam]) this.actors[actorCam] = [];
     this.actors[actorCam].push(actor);
+    this.mainActor = actor.isMain && actor;
   }
 
   getActor(componentCssClass, actorDashed, {resourceId} = {}){
@@ -74,5 +75,13 @@ export class ActorForward {
 
   actorCamelized(actorDashed){
     return actorDashed.split('-').map(word => {return word.toUpperCase()[0] + word.slice(1)}).join("");
+  }
+
+  get mainActor(){
+    return this._mainActor;
+  }
+
+  set mainActor(actor){
+    this._mainActor = actor;
   }
 }
