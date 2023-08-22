@@ -30,6 +30,7 @@ export class ActorBase{
 
   retrievePropsFromDataset({name}){
     const props = this.element.dataset.props || false
+    this.element.removeAttribute('data-props')
     return JSON.parse(props)
   }
 
