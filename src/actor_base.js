@@ -1,6 +1,5 @@
 export class ActorBase{
   constructor(element, {setProps, isMain} = {setProps: false, isMain: false}){
-    const setPropsAvailable = ['cookie', 'dataset']
     this.element = element
     this.name = this.element.dataset.controller
     this.resourceId = this.element.dataset.resourceId || false
@@ -16,7 +15,7 @@ export class ActorBase{
     oldEl.parentNode.replaceChild(newEl, oldEl)
   }
 
-  #retrievePropsFromCookie({name}){
+  retrievePropsFromCookie({name}){
     const cookieValue = document.cookie
       .split(';')
       .map(cookie => cookie.trim())
@@ -29,8 +28,9 @@ export class ActorBase{
     return parsedData
   }
 
-  #retrievePropsFromDataset({name}){
-    return JSON.parse(this.element.dataset.props)
+  retrievePropsFromDataset({name}){
+    const props = this.element.dataset.props || false
+    return JSON.parse(props)
   }
 
   #setProps({setProps}){
@@ -38,7 +38,7 @@ export class ActorBase{
     if (!setPropsAvailable.includes(setProps)) return false
 
     const capitalize = (str) => str.charAt(0).toUpperCase() + str.slice(1)
-    const setPropsMethodName = `#retrievePropsFrom${capitalize(setProps)}`
-    this[setPropsMethodName].call(this, {name: this.name})
+    const setPropsMethodName = `retrievePropsFrom${capitalize(setProps)}`
+    return this[setPropsMethodName].call(this, {name: this.name})
   }
 }
