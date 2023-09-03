@@ -6,7 +6,7 @@ export class ActorBase{
     this.props = this.#setProps({setProps})
 
     this.isMain = isMain
-    window.Birdel.addActor({...this})
+    window.Birdel.addActor(...this)
   }
 
   replace(newElHtml, oldEl){
