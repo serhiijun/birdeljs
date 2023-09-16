@@ -4,7 +4,6 @@ export class ActorBase{
     this.name = this.element.dataset.controller
     this.resourceId = this.element.dataset.resourceId || false
     this.props = this.#setProps({setProps})
-
     this.isMain = isMain
     window.Birdel.addActor(this)
   }
