@@ -24,7 +24,7 @@ export class ActorForward {
     const actorCam = this.actorCamelized(actorDashed) + "Actor"
     if(!this.actors[actorCam]) this.actors[actorCam] = []
     this.actors[actorCam].push(actor)
-    this.mainActor = actor.isMain && actor
+    this.mainActor = this.mainActor || (actor.isMain && actor)
   }
 
   getActor(componentCssClass, actorDashed, {resourceId} = {}){
